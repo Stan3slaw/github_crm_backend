@@ -1,0 +1,56 @@
+version: '1.0'
+
+services:
+  app:
+    container_name: github-crm
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: pnpm start:dev
+    ports:
+      - 3001:3001
+    networks:
+      - sharednet
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    environment:
+      PG_HOST: host.docker.internal
+      MONGODB_USER_NAME:
+      MONGODB_USER_PASSWORD:
+      MONGODB_DATABASE_NAME:
+      MONGODB_URL:
+    depends_on:
+      - postgres
+      - mongodb
+  postgres:
+    container_name: github-crm-postgres
+    image: postgres:16.1
+    networks:
+      - sharednet
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  mongodb:
+    container_name: github-crm-mongodb
+    image: mongo
+    networks:
+      - sharednet
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER_NAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_USER_PASSWORD}
+    ports:
+      - 27017:27017
+networks:
+  sharednet:
+volumes:
+  pgdata:
