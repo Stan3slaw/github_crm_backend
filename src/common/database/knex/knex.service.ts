@@ -2,17 +2,12 @@ import { Injectable } from '@nestjs/common';
 import type { Knex } from 'knex';
 import KnexInit from 'knex';
 
-import { ConfigService } from '@nestjs/config';
-
 import { Logger } from '../../logger/logger.service';
 import knexConfiguration from './knex.config';
 
 @Injectable()
 export class KnexService {
-  constructor(
-    private readonly logger: Logger,
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private readonly logger: Logger) {
     this.logger.setContext(KnexService.name);
   }
 
